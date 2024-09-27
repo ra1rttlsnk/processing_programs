@@ -1,11 +1,18 @@
+/* 
+COMMENTING IS MORE IMPORTANT THAN CODING!!!
+USING THE COMMENTS ONE CAN CODE IN ANY LANGUAGE ONE PREFERS.
+COMMENTING IS JUST ANOTHER NAME FOR PROGRAMMING.
+CODING IS JUST TRANSLATING THE PROGRAMMING INTO A PARTICULAR LANGUAGE.
+*/
 // What remains is adding a visualizer
 
 // The required globals
-StringList pressed_keys = new StringList();
+StringList words = new StringList();
 FloatList times = new FloatList();
-int word_count = 0;
 float speed = 0.0;
-
+String current_word = "";
+int start_time = 0;
+boolean typing_started = false;
 
 void setup() {
   size(800,800);
@@ -16,11 +23,13 @@ void setup() {
 void draw() {
   background(20,20,45);
   textSize(16);
-  text(str(word_count), 100, 100);
+  text(str(words.size()), 100, 100);
   textSize(36);
   text(str(speed), 100, 200);
   textSize(16);
   text(str(millis()/1000), 200, 100);
+  textSize(16);
+  text(current_word, 300, 100);
   
 }
 
@@ -40,12 +49,33 @@ void showList(FloatList listName) {
 // Handle keys
 void keyTyped() {
   loop();
-  pressed_keys.append(str(key));
-  times.append(millis());
   
+  // when backspace is pressed and current word is not empty, remove the last typed key
+  if(key == BACKSPACE) {
+    if(current_word == "") return;
+    
+    current_word = current_word.substring(0,current_word.length()-1);
+    println(current_word);
+    return;
+  }
+  // user has started typing
+  if(!typing_started){
+    times.append(millis());
+  }
+  typing_started = true;
+  
+  // keep constructing the current word with every keystroke until the spacebar is pressed
+  current_word += str(key);
+  
+  // when the spacebar is pressed, append the word and the time when the word is done constructing
   if(key==' '){
-    word_count++;
-    speed = word_count/(millis()-times.get(0))*60*1000;
+    words.append(current_word);
+    
+    // reset the current word to construct a new word 
+    current_word = "";
+    
+    // calculate the typing speed
+    speed = words.size()/(millis()-times.get(0))*60*1000;
   }
   
 }
